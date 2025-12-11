@@ -1,44 +1,37 @@
-// File: src/models/index.js
+// File: src/models/index.js (Corrected and Final)
 
-const sequelize = require('../config/database');
-const User = require('./User');
-const Company = require('./Company');
-const Job = require('./Job');
-const Application = require('./Application');
-const ApplicationHistory = require('./ApplicationHistory');
+const { sequelize, DataTypes } = require('../config/database');
+
+const db = {};
+
+// Initialize all models and store them in the db object
+db.User = require('./User')(sequelize, DataTypes);
+db.Company = require('./Company')(sequelize, DataTypes);
+db.Job = require('./Job')(sequelize, DataTypes);
+db.Application = require('./Application')(sequelize, DataTypes);
+db.ApplicationHistory = require('./ApplicationHistory')(sequelize, DataTypes);
 
 // --- Define Relationships (Associations) ---
+// This part remains the same, but we use the models from the db object
+db.Company.hasMany(db.User, { foreignKey: 'companyId', constraints: false });
+db.User.belongsTo(db.Company, { foreignKey: 'companyId' });
 
-// A Company has many Users (Recruiters/Managers), but a User (Candidate) doesn't need a Company.
-Company.hasMany(User, { foreignKey: 'companyId', constraints: false });
-User.belongsTo(Company, { foreignKey: 'companyId' });
+db.Company.hasMany(db.Job, { foreignKey: { name: 'companyId', allowNull: false } });
+db.Job.belongsTo(db.Company, { foreignKey: { name: 'companyId', allowNull: false } });
 
-// A Company has many Jobs. A Job must belong to a Company.
-Company.hasMany(Job, { foreignKey: { name: 'companyId', allowNull: false } });
-Job.belongsTo(Company, { foreignKey: { name: 'companyId', allowNull: false } });
+db.Job.hasMany(db.Application, { foreignKey: { name: 'jobId', allowNull: false } });
+db.Application.belongsTo(db.Job, { foreignKey: { name: 'jobId', allowNull: false } });
 
-// A Job has many Applications. An Application must belong to a Job.
-Job.hasMany(Application, { foreignKey: { name: 'jobId', allowNull: false } });
-Application.belongsTo(Job, { foreignKey: { name: 'jobId', allowNull: false } });
+db.User.hasMany(db.Application, { foreignKey: { name: 'candidateId', allowNull: false } });
+db.Application.belongsTo(db.User, { as: 'candidate', foreignKey: { name: 'candidateId', allowNull: false } });
 
-// A User (as a Candidate) has many Applications. An Application must belong to a Candidate.
-User.hasMany(Application, { foreignKey: { name: 'candidateId', allowNull: false } });
-Application.belongsTo(User, { as: 'candidate', foreignKey: { name: 'candidateId', allowNull: false } });
+db.Application.hasMany(db.ApplicationHistory, { foreignKey: { name: 'applicationId', allowNull: false } });
+db.ApplicationHistory.belongsTo(db.Application, { foreignKey: { name: 'applicationId', allowNull: false } });
 
-// An Application has many History logs. A History log must belong to an Application.
-Application.hasMany(ApplicationHistory, { foreignKey: { name: 'applicationId', allowNull: false } });
-ApplicationHistory.belongsTo(Application, { foreignKey: { name: 'applicationId', allowNull: false } });
+db.User.hasMany(db.ApplicationHistory, { foreignKey: { name: 'changedById', allowNull: false } });
+db.ApplicationHistory.belongsTo(db.User, { as: 'changedBy', foreignKey: { name: 'changedById', allowNull: false } });
 
-// A User (as a Recruiter) can be the source of many History changes. A History log must record who changed it.
-User.hasMany(ApplicationHistory, { foreignKey: { name: 'changedById', allowNull: false } });
-ApplicationHistory.belongsTo(User, { as: 'changedBy', foreignKey: { name: 'changedById', allowNull: false } });
+// Add the sequelize instance to the db object
+db.sequelize = sequelize;
 
-// Export all models and the sequelize instance for use elsewhere in the application
-module.exports = {
-  sequelize,
-  User,
-  Company,
-  Job,
-  Application,
-  ApplicationHistory,
-};
+module.exports = db;

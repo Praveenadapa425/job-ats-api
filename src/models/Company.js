@@ -1,26 +1,32 @@
-// File: src/models/Company.js
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+// File: src/models/Company.js 
 
-const Company = sequelize.define('Company', {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: {
-      msg: 'A company with this name already exists.',
+module.exports = (sequelize, DataTypes) => {
+  // We define the model inside this function
+  const Company = sequelize.define('Company', {
+    // Primary Key
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
-  },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: true, // Description can be optional
-  },
-}, {
-  timestamps: true,
-});
+    // Company Name
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: {
+        msg: 'A company with this name already exists.',
+      },
+    },
+    // Optional company description
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+  }, {
+    // Sequelize options
+    timestamps: true, // Automatically add createdAt and updatedAt columns
+  });
 
-module.exports = Company;
+  // The function returns the initialized model
+  return Company;
+};
