@@ -149,6 +149,9 @@ Applied → Screening → Interview → Offer → Hired
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
 
+### Health Check
+- `GET /api/health` - System health status
+
 ### Jobs
 - `GET /api/jobs` - Get all jobs
 - `GET /api/jobs/:id` - Get a specific job
