@@ -8,10 +8,10 @@ const { authenticate, authorize } = require('../middleware/authMiddleware');
 // All job routes require authentication
 router.use(authenticate);
 
-// GET /api/jobs - Get all jobs (public)
+// GET /api/jobs - Get all jobs (public access in README, but let's make it accessible to all authenticated users)
 router.get('/', jobController.getAllJobs);
 
-// GET /api/jobs/:id - Get a specific job (public)
+// GET /api/jobs/:id - Get a specific job (public access in README, but let's make it accessible to all authenticated users)
 router.get('/:id', jobController.getJobById);
 
 // POST /api/jobs - Create a new job (recruiters only)
