@@ -17,7 +17,7 @@ A robust backend system for managing job applications with complex workflows, ro
 - **Authentication**: JWT (JSON Web Tokens)
 - **Background Jobs**: BullMQ with Redis
 - **Email Service**: SendGrid
-- **Testing**: Jest
+- **Testing**: Jest, Supertest
 
 ## System Architecture
 
@@ -254,6 +254,25 @@ Applied → Screening → Interview → Offer → Hired
 
 Both the main API server and the background worker must be running for the application to function properly.
 
+### Docker Deployment (Recommended)
+
+For easier deployment and testing, you can use Docker:
+
+1. Build and start all services:
+   ```bash
+   docker-compose up --build
+   ```
+
+2. The services will be available at:
+   - API: http://localhost:3000
+   - PostgreSQL: localhost:5432
+   - Redis: localhost:6379
+
+3. To stop all services:
+   ```bash
+   docker-compose down
+   ```
+
 ## Environment Variables
 
 Create a `.env` file with the following variables:
@@ -283,14 +302,20 @@ PORT=3000
 
 - Start the server: `npm start` or `npm run dev`
 - Start the worker: `npm run worker`
-- Run tests: `npm test`
+- Run unit tests: `npm test`
+- Run integration tests: `npm run test:integration`
 - Validate requirements: `npm run validate`
 
 ## Testing
 
-### Running Tests
+### Running Unit Tests
 ```bash
 npm test
+```
+
+### Running Integration Tests
+```bash
+npm run test:integration
 ```
 
 ### State Machine Demo

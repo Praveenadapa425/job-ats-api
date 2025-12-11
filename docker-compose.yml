@@ -1,0 +1,74 @@
+# File: docker-compose.yml
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: job_ats_db
+      POSTGRES_USER: job_ats_user
+      POSTGRES_PASSWORD: job_ats_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - job-ats-network
+
+  # Redis for BullMQ
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - job-ats-network
+
+  # Main API Service
+  api:
+    build: .
+    depends_on:
+      - db
+      - redis
+    environment:
+      DB_NAME: job_ats_db
+      DB_USER: job_ats_user
+      DB_PASSWORD: job_ats_password
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your_jwt_secret_here
+      SENDGRID_API_KEY: your_sendgrid_api_key_here
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    networks:
+      - job-ats-network
+    command: npm start
+
+  # Background Worker Service
+  worker:
+    build: .
+    depends_on:
+      - db
+      - redis
+    environment:
+      DB_NAME: job_ats_db
+      DB_USER: job_ats_user
+      DB_PASSWORD: job_ats_password
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your_jwt_secret_here
+      SENDGRID_API_KEY: your_sendgrid_api_key_here
+    networks:
+      - job-ats-network
+    command: npm run worker
+
+volumes:
+  postgres_data:
+
+networks:
+  job-ats-network:
+    driver: bridge
