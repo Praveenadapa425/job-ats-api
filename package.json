@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "\"# job-ats-api-23MH1A4901\"",
   "main": "index.js",
- "scripts": {
-  "start": "node src/server.js",
-  "dev": "nodemon src/server.js",
-  "worker": "node src/jobs/worker.js",
-  "test": "jest"
-},
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "worker": "node src/jobs/worker.js",
+    "test": "jest",
+    "validate": "node src/demo/requirementsCheck.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Praveenadapa425/job-ats-api-23MH1A4901.git"
